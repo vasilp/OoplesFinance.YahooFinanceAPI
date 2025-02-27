@@ -1,6 +1,6 @@
 namespace OoplesFinance.YahooFinanceAPI.Helpers;
 
-internal static class DownloadHelper
+public class DownloadHelper(YahooApiHelper apiHelper)
 {
     /// <summary>
     /// Downloads the raw csv data using the chosen parameters
@@ -13,17 +13,15 @@ internal static class DownloadHelper
     /// <param name="includeAdjustedClose"></param>
     /// <returns></returns>
     /// <exception cref="ArgumentException"></exception>
-    internal static async Task<string> DownloadRawCsvDataAsync(string symbol, DataType dataType, DataFrequency dataFrequency,
+    internal async Task<string> DownloadRawCsvDataAsync(string symbol, DataType dataType, DataFrequency dataFrequency,
         DateTime startDate, DateTime? endDate, bool includeAdjustedClose)
     {
         if (string.IsNullOrWhiteSpace(symbol))
         {
             throw new ArgumentException("Symbol Parameter Can't Be Empty Or Null");
         }
-        else
-        {
-            return await DownloadRawDataAsync(BuildYahooCsvUrl(symbol, dataType, dataFrequency, startDate, endDate, includeAdjustedClose));
-        }
+
+        return await DownloadRawDataAsync(BuildYahooCsvUrl(symbol, dataType, dataFrequency, startDate, endDate, includeAdjustedClose));
     }
 
     /// <summary>
@@ -33,16 +31,14 @@ internal static class DownloadHelper
     /// <param name="count"></param>
     /// <returns></returns>
     /// <exception cref="ArgumentException"></exception>
-    internal static async Task<string> DownloadTrendingDataAsync(Country country, int count)
+    internal async Task<string> DownloadTrendingDataAsync(Country country, int count)
     {
         if (count <= 0)
         {
             throw new ArgumentException("Count Must Be At Least 1 To Return Any Data");
         }
-        else
-        {
-            return await DownloadRawDataAsync(BuildYahooTrendingUrl(country, count));
-        }
+
+        return await DownloadRawDataAsync(BuildYahooTrendingUrl(country, count));
     }
 
     /// <summary>
@@ -52,57 +48,46 @@ internal static class DownloadHelper
     /// <param name="count"></param>
     /// <returns></returns>
     /// <exception cref="ArgumentException"></exception>
-    internal static async Task<string> DownloadScreenerDataAsync(ScreenerType screenerType, int count)
+    internal async Task<string> DownloadScreenerDataAsync(ScreenerType screenerType, int count)
     {
         if (count <= 0)
         {
             throw new ArgumentException("Count Must Be At Least 1 To Return Any Data");
         }
-        else
-        {
-            return await DownloadRawDataAsync(BuildYahooScreenerUrl(screenerType, count));
-        }
+
+        return await DownloadRawDataAsync(BuildYahooScreenerUrl(screenerType, count));
     }
 
     /// <summary>
     /// Base method to download any raw yahoo data
     /// </summary>
-    /// <param name="uriString"></param>
-    /// <returns></returns>
+    /// <param name="urlString"></param>
     /// <exception cref="InvalidOperationException"></exception>
     /// <exception cref="ArgumentException"></exception>
-    private static async Task<string> DownloadRawDataAsync(string urlString)
+    private async Task<string> DownloadRawDataAsync(string urlString)
     {
-        // max length for a uri
+        // max length for uri
         if (urlString.Length > 2083)
         {
             throw new ArgumentException("You Have Included Too Many Symbols");
         }
-        else
+
+        var response = await apiHelper.Client.GetAsync(urlString);
+
+        if (response.IsSuccessStatusCode)
         {
-            var client = CrumbHelper.GetHttpClient();   
-            var response = await client.GetAsync(urlString);
-
-            if (response.IsSuccessStatusCode)
-            {
-                // Handle success
-                return await response.Content.ReadAsStringAsync();
-            }
-            else
-            {
-                (await CrumbHelper.GetInstance(false)).Destroy();
-
-                throw response.StatusCode switch
-                {
-                    // Handle failure
-                    HttpStatusCode.NotFound => new InvalidOperationException(
-                        "Requested Information Not Available On Yahoo Finance"),
-                    HttpStatusCode.Unauthorized => new InvalidOperationException("Yahoo Finance Authentication Error"),
-                    HttpStatusCode.Forbidden => new InvalidOperationException("Yahoo Finance Authentication Error"),
-                    _ => new InvalidOperationException("Yahoo Finance Server Error " + response.StatusCode),
-                };
-            }
+            // Handle success
+            return await response.Content.ReadAsStringAsync();
         }
+
+        throw response.StatusCode switch
+        {
+            // Handle failure
+            HttpStatusCode.NotFound => new InvalidOperationException("Requested Information Not Available On Yahoo Finance"),
+            HttpStatusCode.Unauthorized => new InvalidOperationException("Yahoo Finance Authentication Error"),
+            HttpStatusCode.Forbidden => new InvalidOperationException("Yahoo Finance Authentication Error"),
+            _ => new InvalidOperationException("Yahoo Finance Server Error " + response.StatusCode),
+        };
     }
 
     /// <summary>
@@ -111,16 +96,14 @@ internal static class DownloadHelper
     /// <param name="symbol"></param>
     /// <returns></returns>
     /// <exception cref="ArgumentException"></exception>
-    internal static async Task<string> DownloadRecommendDataAsync(string symbol)
+    internal async Task<string> DownloadRecommendDataAsync(string symbol)
     {
         if (string.IsNullOrWhiteSpace(symbol))
         {
             throw new ArgumentException("Symbol Parameter Can't Be Empty Or Null");
         }
-        else
-        {
-            return await DownloadRawDataAsync(BuildYahooRecommendUrl(symbol));
-        }
+
+        return await DownloadRawDataAsync(BuildYahooRecommendUrl(symbol));
     }
 
     /// <summary>
@@ -129,16 +112,14 @@ internal static class DownloadHelper
     /// <param name="symbol"></param>
     /// <returns></returns>
     /// <exception cref="ArgumentException"></exception>
-    internal static async Task<string> DownloadInsightsDataAsync(string symbol)
+    internal async Task<string> DownloadInsightsDataAsync(string symbol)
     {
         if (string.IsNullOrWhiteSpace(symbol))
         {
             throw new ArgumentException("Symbol Parameter Can't Be Empty Or Null");
         }
-        else
-        {
-            return await DownloadRawDataAsync(BuildYahooInsightsUrl(symbol));
-        }
+
+        return await DownloadRawDataAsync(BuildYahooInsightsUrl(symbol));
     }
 
     /// <summary>
@@ -149,16 +130,14 @@ internal static class DownloadHelper
     /// <param name="timeInterval"></param>
     /// <returns></returns>
     /// <exception cref="ArgumentException"></exception>
-    internal static async Task<string> DownloadChartDataAsync(string symbol, TimeRange timeRange, TimeInterval timeInterval)
+    internal async Task<string> DownloadChartDataAsync(string symbol, TimeRange timeRange, TimeInterval timeInterval)
     {
         if (string.IsNullOrWhiteSpace(symbol))
         {
             throw new ArgumentException("Symbol Parameter Can't Be Empty Or Null");
         }
-        else
-        {
-            return await DownloadRawDataAsync(BuildYahooChartUrl(symbol, timeRange, timeInterval));
-        }
+
+        return await DownloadRawDataAsync(BuildYahooChartUrl(symbol, timeRange, timeInterval));
     }
 
     /// <summary>
@@ -169,16 +148,14 @@ internal static class DownloadHelper
     /// <param name="timeInterval"></param>
     /// <returns></returns>
     /// <exception cref="ArgumentException"></exception>
-    internal static async Task<string> DownloadSparkChartDataAsync(string symbol, TimeRange timeRange, TimeInterval timeInterval)
+    internal async Task<string> DownloadSparkChartDataAsync(string symbol, TimeRange timeRange, TimeInterval timeInterval)
     {
         if (string.IsNullOrWhiteSpace(symbol))
         {
             throw new ArgumentException("Symbol Parameter Can't Be Empty Or Null");
         }
-        else
-        {
-            return await DownloadRawDataAsync(BuildYahooSparkChartUrl([symbol], timeRange, timeInterval));
-        }
+
+        return await DownloadRawDataAsync(BuildYahooSparkChartUrl([symbol], timeRange, timeInterval));
     }
 
     /// <summary>
@@ -189,20 +166,19 @@ internal static class DownloadHelper
     /// <param name="timeInterval"></param>
     /// <returns></returns>
     /// <exception cref="ArgumentException"></exception>
-    internal static async Task<string> DownloadSparkChartDataAsync(IEnumerable<string> symbols, TimeRange timeRange, TimeInterval timeInterval)
+    internal async Task<string> DownloadSparkChartDataAsync(IEnumerable<string> symbols, TimeRange timeRange, TimeInterval timeInterval)
     {
         if (!symbols.Any())
         {
             throw new ArgumentException("Symbols Parameter Must Contain At Least One Symbol");
         }
-        else if (symbols.Count() > 250)
+
+        if (symbols.Count() > 250)
         {
             throw new ArgumentException("Symbols Parameter Can't Have More Than 250 Symbols");
         }
-        else
-        {
-            return await DownloadRawDataAsync(BuildYahooSparkChartUrl(symbols, timeRange, timeInterval));
-        }
+
+        return await DownloadRawDataAsync(BuildYahooSparkChartUrl(symbols, timeRange, timeInterval));
     }
 
     /// <summary>
@@ -214,16 +190,15 @@ internal static class DownloadHelper
     /// <param name="module"></param>
     /// <returns></returns>
     /// <exception cref="ArgumentException"></exception>
-    internal static async Task<string> DownloadStatsDataAsync(string symbol, Country country, Language language, YahooModule module)
+    internal async Task<string> DownloadStatsDataAsync(string symbol, Country country, Language language, YahooModule module)
     {
         if (string.IsNullOrWhiteSpace(symbol))
         {
             throw new ArgumentException("Symbol Parameter Can't Be Empty Or Null");
         }
-        else
-        {
-            return await DownloadRawDataAsync(await BuildYahooStatsUrl(symbol, country, language, module));
-        }
+
+        var crumb = await apiHelper.GetCrumb();
+        return await DownloadRawDataAsync(BuildYahooStatsUrl(symbol, country, language, module, crumb));
     }
 
     /// <summary>
@@ -234,16 +209,15 @@ internal static class DownloadHelper
     /// <param name="language"></param>
     /// <returns></returns>
     /// <exception cref="ArgumentException"></exception>
-    internal static async Task<string> DownloadRealTimeQuoteDataAsync(string symbol, Country country, Language language)
+    internal async Task<string> DownloadRealTimeQuoteDataAsync(string symbol, Country country, Language language)
     {
         if (string.IsNullOrWhiteSpace(symbol))
         {
             throw new ArgumentException("Symbol Parameter Can't Be Empty Or Null");
         }
-        else
-        {
-            return await DownloadRawDataAsync(await BuildYahooRealTimeQuoteUrl([symbol], country, language));
-        }
+
+        var crumb = await apiHelper.GetCrumb();
+        return await DownloadRawDataAsync(BuildYahooRealTimeQuoteUrl([symbol], country, language, crumb));
     }
 
     /// <summary>
@@ -254,20 +228,20 @@ internal static class DownloadHelper
     /// <param name="language"></param>
     /// <returns></returns>
     /// <exception cref="ArgumentException"></exception>
-    internal static async Task<string> DownloadRealTimeQuoteDataAsync(IEnumerable<string> symbols, Country country, Language language)
+    internal async Task<string> DownloadRealTimeQuoteDataAsync(IEnumerable<string> symbols, Country country, Language language)
     {
         if (!symbols.Any())
         {
             throw new ArgumentException("Symbols Parameter Must Contain At Least One Symbol");
         }
-        else if (symbols.Count() > 250)
+
+        if (symbols.Count() > 250)
         {
             throw new ArgumentException("Symbols Parameter Can't Have More Than 250 Symbols");
         }
-        else
-        {
-            return await DownloadRawDataAsync(await BuildYahooRealTimeQuoteUrl(symbols, country, language));
-        }
+
+        var crumb = await apiHelper.GetCrumb();
+        return await DownloadRawDataAsync(BuildYahooRealTimeQuoteUrl(symbols, country, language, crumb));
     }
 
     /// <summary>
@@ -276,7 +250,7 @@ internal static class DownloadHelper
     /// <param name="country"></param>
     /// <param name="language"></param>
     /// <returns></returns>
-    internal static async Task<string> DownloadMarketSummaryDataAsync(Country country, Language language)
+    internal async Task<string> DownloadMarketSummaryDataAsync(Country country, Language language)
     {
         return await DownloadRawDataAsync(BuildYahooMarketSummaryUrl(country, language));
     }
@@ -289,16 +263,14 @@ internal static class DownloadHelper
     /// <param name="language"></param>
     /// <returns></returns>
     /// <exception cref="ArgumentException"></exception>
-    internal static async Task<string> DownloadAutoCompleteDataAsync(string searchTerm, Country country, Language language)
+    internal async Task<string> DownloadAutoCompleteDataAsync(string searchTerm, Country country, Language language)
     {
         if (string.IsNullOrWhiteSpace(searchTerm))
         {
             throw new ArgumentException("The Search Term Parameter Can't Be Empty Or Null");
         }
-        else
-        {
-            return await DownloadRawDataAsync(BuildYahooAutoCompleteUrl(searchTerm, country, language));
-        }
+
+        return await DownloadRawDataAsync(BuildYahooAutoCompleteUrl(searchTerm, country, language));
     }
 
     /// <summary>

@@ -1,0 +1,64 @@
+name: OoplesFinance.YahooFinanceAPI Vasil's fix Build and Publish
+
+on:
+  push:
+    branches: ["master"]
+    tags-ignore: ['v*']
+  pull_request:
+    branches: ["master"]
+
+env:
+  SOLUTION_NAME: src/OoplesFinance.YahooFinanceAPI.csproj
+  PROJECTS: >
+    src/OoplesFinance.YahooFinanceAPI.csproj
+  NUGET_SOURCE: https://nuget.pkg.github.com/${{ github.repository_owner }}/index.json
+  VERSION: 10.10.${{ github.run_number }}-vasil
+  NUGET_API_KEY: ${{ secrets.GITHUB_TOKEN }}
+  DOTNET_VERSION: '8.0.x'
+
+jobs:
+  build-and-pack:
+    runs-on: ubuntu-latest
+
+    permissions:
+      packages: write
+      contents: read
+
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v3
+      with:
+        fetch-depth: 0
+        token: ${{ secrets.GITHUB_TOKEN }}
+
+    - name: Setup .NET SDK
+      uses: actions/setup-dotnet@v3
+      with:
+        dotnet-version: ${{ env.DOTNET_VERSION }}
+
+    - name: Restore dependencies
+      run: dotnet restore ${{ env.SOLUTION_NAME }}
+
+    - name: Build solution
+      run: dotnet build ${{ env.SOLUTION_NAME }} --configuration Release -p:Version=${{ env.VERSION }} --no-restore
+
+    #- name: Run tests
+    #  run: dotnet test ${{ env.SOLUTION_NAME }} --configuration Release --no-restore --no-build
+
+    - name: Pack and Publish
+      run: |
+        rm -rf ./packages
+        mkdir ./packages
+        for project in ${{ env.PROJECTS }}
+        do
+          dotnet pack "$project" --configuration Release --no-restore --no-build -p:PackageVersion=${{ env.VERSION }} -o ./packages
+        done
+        dotnet nuget push ./packages/*.nupkg --source ${{ env.NUGET_SOURCE }} --api-key ${{ env.NUGET_API_KEY }} --skip-duplicate
+
+    #- name: Create Git Tag
+    #  if: success()
+    #  run: |
+    #    git config --global user.name "${{ github.actor }}"
+    #    git config --global user.email "${{ github.actor }}@users.noreply.github.com"
+    #    git tag -a "v${{ env.VERSION }}" -m "Version ${{ env.VERSION }}"
+    #    git push origin "v${{ env.VERSION }}"

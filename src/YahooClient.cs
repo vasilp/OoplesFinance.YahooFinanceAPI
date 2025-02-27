@@ -2,16 +2,17 @@
 
 public class YahooClient
 {
-    private readonly Country Country;
+    private readonly Country country;
 
-    private readonly Language Language;
-    
-    public static bool IsThrottled { get; set; }
+    private readonly Language language;
 
-    public YahooClient(Country? country = null, Language? language = null)
+    private readonly DownloadHelper downloadHelper;
+
+    public YahooClient(DownloadHelper downloadHelper, Country? country = null, Language? language = null)
     {
-        Country = country ?? Country.UnitedStates;
-        Language = language ?? Language.English;
+        this.downloadHelper = downloadHelper;
+        this.country = country ?? Country.UnitedStates;
+        this.language = language ?? Language.English;
     }
 
     /// <summary>
@@ -24,7 +25,7 @@ public class YahooClient
     public async Task<IEnumerable<HistoricalChartInfo>> GetHistoricalDataAsync(string symbol, DataFrequency dataFrequency, DateTime startDate)
     {
         return new HistoricalHelper().ParseYahooJsonData<HistoricalChartInfo>(
-            await DownloadRawCsvDataAsync(symbol, DataType.HistoricalPrices, dataFrequency, startDate, null, true));
+            await downloadHelper.DownloadRawCsvDataAsync(symbol, DataType.HistoricalPrices, dataFrequency, startDate, null, true));
     }
 
     /// <summary>
@@ -39,7 +40,7 @@ public class YahooClient
         DateTime startDate, DateTime? endDate)
     {
         return new HistoricalHelper().ParseYahooJsonData<HistoricalChartInfo>(
-            await DownloadRawCsvDataAsync(symbol, DataType.HistoricalPrices, dataFrequency, startDate, endDate, true));
+            await downloadHelper.DownloadRawCsvDataAsync(symbol, DataType.HistoricalPrices, dataFrequency, startDate, endDate, true));
     }
 
     /// <summary>
@@ -55,7 +56,7 @@ public class YahooClient
         DateTime startDate, DateTime? endDate, bool includeAdjustedClose)
     {
         return new HistoricalHelper().ParseYahooJsonData<HistoricalChartInfo>(
-            await DownloadRawCsvDataAsync(symbol, DataType.HistoricalPrices, dataFrequency, startDate, endDate, includeAdjustedClose));
+            await downloadHelper.DownloadRawCsvDataAsync(symbol, DataType.HistoricalPrices, dataFrequency, startDate, endDate, includeAdjustedClose));
     }
     
     /// <summary>
@@ -68,7 +69,7 @@ public class YahooClient
     public async Task<HistoricalFullData> GetAllHistoricalDataAsync(string symbol, DataFrequency dataFrequency, DateTime startDate)
     {
         return new AllHistoricalHelper().ParseYahooJsonData<HistoricalFullData>(
-            await DownloadRawCsvDataAsync(symbol, DataType.All, dataFrequency, startDate, null, true));
+            await downloadHelper.DownloadRawCsvDataAsync(symbol, DataType.All, dataFrequency, startDate, null, true));
     }
     
     /// <summary>
@@ -83,7 +84,7 @@ public class YahooClient
         DateTime startDate, DateTime? endDate)
     {
         return new AllHistoricalHelper().ParseYahooJsonData<HistoricalFullData>(
-            await DownloadRawCsvDataAsync(symbol, DataType.All, dataFrequency, startDate, endDate, true));
+            await downloadHelper.DownloadRawCsvDataAsync(symbol, DataType.All, dataFrequency, startDate, endDate, true));
     }
     
     /// <summary>
@@ -99,7 +100,7 @@ public class YahooClient
         DateTime startDate, DateTime? endDate, bool includeAdjustedClose)
     {
         return new AllHistoricalHelper().ParseYahooJsonData<HistoricalFullData>(
-            await DownloadRawCsvDataAsync(symbol, DataType.All, dataFrequency, startDate, endDate, includeAdjustedClose));
+            await downloadHelper.DownloadRawCsvDataAsync(symbol, DataType.All, dataFrequency, startDate, endDate, includeAdjustedClose));
     }
 
     /// <summary>
@@ -112,7 +113,7 @@ public class YahooClient
     public async Task<IEnumerable<DividendResult>> GetDividendDataAsync(string symbol, DataFrequency dataFrequency, DateTime startDate)
     {
         return new DividendHelper().ParseYahooJsonData<DividendResult>(
-            await DownloadRawCsvDataAsync(symbol, DataType.Dividends, dataFrequency, startDate, null, true));
+            await downloadHelper.DownloadRawCsvDataAsync(symbol, DataType.Dividends, dataFrequency, startDate, null, true));
     }
 
     /// <summary>
@@ -127,7 +128,7 @@ public class YahooClient
         DateTime startDate, DateTime? endDate)
     {
         return new DividendHelper().ParseYahooJsonData<DividendResult>(
-            await DownloadRawCsvDataAsync(symbol, DataType.Dividends, dataFrequency, startDate, endDate, true));
+            await downloadHelper.DownloadRawCsvDataAsync(symbol, DataType.Dividends, dataFrequency, startDate, endDate, true));
     }
 
     /// <summary>
@@ -143,7 +144,7 @@ public class YahooClient
         DateTime startDate, DateTime? endDate, bool includeAdjustedClose)
     {
         return new DividendHelper().ParseYahooJsonData<DividendResult>(
-            await DownloadRawCsvDataAsync(symbol, DataType.Dividends, dataFrequency, startDate, endDate, includeAdjustedClose));
+            await downloadHelper.DownloadRawCsvDataAsync(symbol, DataType.Dividends, dataFrequency, startDate, endDate, includeAdjustedClose));
     }
 
     /// <summary>
@@ -156,7 +157,7 @@ public class YahooClient
     public async Task<IEnumerable<StockSplitResult>> GetStockSplitDataAsync(string symbol, DataFrequency dataFrequency, DateTime startDate)
     {
         return new StockSplitHelper().ParseYahooJsonData<StockSplitResult>(
-            await DownloadRawCsvDataAsync(symbol, DataType.StockSplits, dataFrequency, startDate, null, true));
+            await downloadHelper.DownloadRawCsvDataAsync(symbol, DataType.StockSplits, dataFrequency, startDate, null, true));
     }
 
     /// <summary>
@@ -171,7 +172,7 @@ public class YahooClient
         DateTime startDate, DateTime? endDate)
     {
         return new StockSplitHelper().ParseYahooJsonData<StockSplitResult>(
-            await DownloadRawCsvDataAsync(symbol, DataType.StockSplits, dataFrequency, startDate, endDate, true));
+            await downloadHelper.DownloadRawCsvDataAsync(symbol, DataType.StockSplits, dataFrequency, startDate, endDate, true));
     }
 
     /// <summary>
@@ -187,7 +188,7 @@ public class YahooClient
         DateTime startDate, DateTime? endDate, bool includeAdjustedClose)
     {
         return new StockSplitHelper().ParseYahooJsonData<StockSplitResult>(
-            await DownloadRawCsvDataAsync(symbol, DataType.StockSplits, dataFrequency, startDate, endDate, includeAdjustedClose));
+            await downloadHelper.DownloadRawCsvDataAsync(symbol, DataType.StockSplits, dataFrequency, startDate, endDate, includeAdjustedClose));
     }
 
     /// <summary>
@@ -200,7 +201,7 @@ public class YahooClient
     public async Task<IEnumerable<Result>> GetCapitalGainDataAsync(string symbol, DataFrequency dataFrequency, DateTime startDate)
     {
         return new CapitalGainHelper().ParseYahooJsonData<Result>(
-            await DownloadRawCsvDataAsync(symbol, DataType.CapitalGains, dataFrequency, startDate, null, true));
+            await downloadHelper.DownloadRawCsvDataAsync(symbol, DataType.CapitalGains, dataFrequency, startDate, null, true));
     }
 
     /// <summary>
@@ -215,7 +216,7 @@ public class YahooClient
         DateTime startDate, DateTime? endDate)
     {
         return new CapitalGainHelper().ParseYahooJsonData<Result>(
-            await DownloadRawCsvDataAsync(symbol, DataType.CapitalGains, dataFrequency, startDate, endDate, true));
+            await downloadHelper.DownloadRawCsvDataAsync(symbol, DataType.CapitalGains, dataFrequency, startDate, endDate, true));
     }
 
     /// <summary>
@@ -231,7 +232,7 @@ public class YahooClient
         DateTime startDate, DateTime? endDate, bool includeAdjustedClose)
     {
         return new CapitalGainHelper().ParseYahooJsonData<Result>(
-            await DownloadRawCsvDataAsync(symbol, DataType.CapitalGains, dataFrequency, startDate, endDate, includeAdjustedClose));
+            await downloadHelper.DownloadRawCsvDataAsync(symbol, DataType.CapitalGains, dataFrequency, startDate, endDate, includeAdjustedClose));
     }
 
     /// <summary>
@@ -242,7 +243,7 @@ public class YahooClient
     /// <returns></returns>
     public async Task<IEnumerable<string>> GetTopTrendingStocksAsync(Country country, int count)
     {
-        return new TrendingHelper().ParseYahooJsonData<string>(await DownloadTrendingDataAsync(country, count));
+        return new TrendingHelper().ParseYahooJsonData<string>(await downloadHelper.DownloadTrendingDataAsync(country, count));
     }
 
     /// <summary>
@@ -252,7 +253,7 @@ public class YahooClient
     /// <returns></returns>
     public async Task<IEnumerable<RecommendedSymbol>> GetStockRecommendationsAsync(string symbol)
     {
-        return new RecommendationHelper().ParseYahooJsonData<RecommendedSymbol>(await DownloadRecommendDataAsync(symbol));
+        return new RecommendationHelper().ParseYahooJsonData<RecommendedSymbol>(await downloadHelper.DownloadRecommendDataAsync(symbol));
     }
 
     /// <summary>
@@ -262,7 +263,7 @@ public class YahooClient
     /// <returns></returns>
     public async Task<KeyStatistics> GetKeyStatisticsAsync(string symbol)
     {
-        return new KeyStatisticsHelper().ParseYahooJsonData<KeyStatistics>(await DownloadStatsDataAsync(symbol, Country, Language, YahooModule.KeyStatistics)).First();
+        return new KeyStatisticsHelper().ParseYahooJsonData<KeyStatistics>(await downloadHelper.DownloadStatsDataAsync(symbol, country, language, YahooModule.KeyStatistics)).First();
     }
 
     /// <summary>
@@ -272,7 +273,7 @@ public class YahooClient
     /// <returns></returns>
     public async Task<SummaryDetail> GetSummaryDetailsAsync(string symbol)
     {
-        return new SummaryDetailsHelper().ParseYahooJsonData<SummaryDetail>(await DownloadStatsDataAsync(symbol, Country, Language, YahooModule.SummaryDetails)).First();
+        return new SummaryDetailsHelper().ParseYahooJsonData<SummaryDetail>(await downloadHelper.DownloadStatsDataAsync(symbol, country, language, YahooModule.SummaryDetails)).First();
     }
 
     /// <summary>
@@ -282,7 +283,7 @@ public class YahooClient
     /// <returns></returns>
     public async Task<IEnumerable<InsiderHolder>> GetInsiderHoldersAsync(string symbol)
     {
-        return new InsiderHolderHelper().ParseYahooJsonData<InsiderHolder>(await DownloadStatsDataAsync(symbol, Country, Language, YahooModule.InsiderHolders));
+        return new InsiderHolderHelper().ParseYahooJsonData<InsiderHolder>(await downloadHelper.DownloadStatsDataAsync(symbol, country, language, YahooModule.InsiderHolders));
     }
 
     /// <summary>
@@ -292,7 +293,7 @@ public class YahooClient
     /// <returns></returns>
     public async Task<IEnumerable<Transaction>> GetInsiderTransactionsAsync(string symbol)
     {
-        return new InsiderTransactionHelper().ParseYahooJsonData<Transaction>(await DownloadStatsDataAsync(symbol, Country, Language, YahooModule.InsiderTransactions));
+        return new InsiderTransactionHelper().ParseYahooJsonData<Transaction>(await downloadHelper.DownloadStatsDataAsync(symbol, country, language, YahooModule.InsiderTransactions));
     }
 
     /// <summary>
@@ -302,7 +303,7 @@ public class YahooClient
     /// <returns></returns>
     public async Task<FinancialData> GetFinancialDataAsync(string symbol)
     {
-        return new FinancialDataHelper().ParseYahooJsonData<FinancialData>(await DownloadStatsDataAsync(symbol, Country, Language, YahooModule.FinancialData)).First();
+        return new FinancialDataHelper().ParseYahooJsonData<FinancialData>(await downloadHelper.DownloadStatsDataAsync(symbol, country, language, YahooModule.FinancialData)).First();
     }
 
     /// <summary>
@@ -312,7 +313,7 @@ public class YahooClient
     /// <returns></returns>
     public async Task<IEnumerable<OwnershipList>> GetInstitutionOwnershipAsync(string symbol)
     {
-        return new InstitutionOwnershipHelper().ParseYahooJsonData<OwnershipList>(await DownloadStatsDataAsync(symbol, Country, Language, YahooModule.InstitutionOwnership));
+        return new InstitutionOwnershipHelper().ParseYahooJsonData<OwnershipList>(await downloadHelper.DownloadStatsDataAsync(symbol, country, language, YahooModule.InstitutionOwnership));
     }
 
     /// <summary>
@@ -322,7 +323,7 @@ public class YahooClient
     /// <returns></returns>
     public async Task<IEnumerable<OwnershipList>> GetFundOwnershipAsync(string symbol)
     {
-        return new FundOwnershipHelper().ParseYahooJsonData<OwnershipList>(await DownloadStatsDataAsync(symbol, Country, Language, YahooModule.FundOwnership));
+        return new FundOwnershipHelper().ParseYahooJsonData<OwnershipList>(await downloadHelper.DownloadStatsDataAsync(symbol, country, language, YahooModule.FundOwnership));
     }
 
     /// <summary>
@@ -332,7 +333,7 @@ public class YahooClient
     /// <returns></returns>
     public async Task<IEnumerable<object>> GetMajorDirectHoldersAsync(string symbol)
     {
-        return new MajorDirectHoldersHelper().ParseYahooJsonData<object>(await DownloadStatsDataAsync(symbol, Country, Language, YahooModule.MajorDirectHolders));
+        return new MajorDirectHoldersHelper().ParseYahooJsonData<object>(await downloadHelper.DownloadStatsDataAsync(symbol, country, language, YahooModule.MajorDirectHolders));
     }
 
     /// <summary>
@@ -342,7 +343,7 @@ public class YahooClient
     /// <returns></returns>
     public async Task<IEnumerable<Filing>> GetSecFilingsAsync(string symbol)
     {
-        return new SecFilingsHelper().ParseYahooJsonData<Filing>(await DownloadStatsDataAsync(symbol, Country, Language, YahooModule.SecFilings));
+        return new SecFilingsHelper().ParseYahooJsonData<Filing>(await downloadHelper.DownloadStatsDataAsync(symbol, country, language, YahooModule.SecFilings));
     }
 
     /// <summary>
@@ -352,7 +353,7 @@ public class YahooClient
     /// <returns></returns>
     public async Task<InsightsResult> GetInsightsAsync(string symbol)
     {
-        return new InsightsHelper().ParseYahooJsonData<InsightsResult>(await DownloadInsightsDataAsync(symbol)).First();
+        return new InsightsHelper().ParseYahooJsonData<InsightsResult>(await downloadHelper.DownloadInsightsDataAsync(symbol)).First();
     }
 
     /// <summary>
@@ -363,7 +364,7 @@ public class YahooClient
     public async Task<MajorHoldersBreakdown> GetMajorHoldersBreakdownAsync(string symbol)
     {
         return new MajorHoldersBreakdownHelper().ParseYahooJsonData<MajorHoldersBreakdown>(
-            await DownloadStatsDataAsync(symbol, Country, Language, YahooModule.MajorHoldersBreakdown)).First();
+            await downloadHelper.DownloadStatsDataAsync(symbol, country, language, YahooModule.MajorHoldersBreakdown)).First();
     }
 
     /// <summary>
@@ -374,7 +375,7 @@ public class YahooClient
     public async Task<IEnumerable<History>> GetUpgradeDowngradeHistoryAsync(string symbol)
     {
         return new UpgradeDowngradeHistoryHelper().ParseYahooJsonData<History>(
-            await DownloadStatsDataAsync(symbol, Country, Language, YahooModule.UpgradeDowngradeHistory));
+            await downloadHelper.DownloadStatsDataAsync(symbol, country, language, YahooModule.UpgradeDowngradeHistory));
     }
 
     /// <summary>
@@ -384,7 +385,7 @@ public class YahooClient
     /// <returns></returns>
     public async Task<EsgScores> GetEsgScoresAsync(string symbol)
     {
-        return new EsgScoresHelper().ParseYahooJsonData<EsgScores>(await DownloadStatsDataAsync(symbol, Country, Language, YahooModule.EsgScores)).First();
+        return new EsgScoresHelper().ParseYahooJsonData<EsgScores>(await downloadHelper.DownloadStatsDataAsync(symbol, country, language, YahooModule.EsgScores)).First();
     }
 
     /// <summary>
@@ -394,7 +395,7 @@ public class YahooClient
     /// <returns></returns>
     public async Task<IEnumerable<Trend>> GetRecommendationTrendAsync(string symbol)
     {
-        return new RecommendationTrendHelper().ParseYahooJsonData<Trend>(await DownloadStatsDataAsync(symbol, Country, Language, YahooModule.RecommendationTrend));
+        return new RecommendationTrendHelper().ParseYahooJsonData<Trend>(await downloadHelper.DownloadStatsDataAsync(symbol, country, language, YahooModule.RecommendationTrend));
     }
 
     /// <summary>
@@ -404,7 +405,7 @@ public class YahooClient
     /// <returns></returns>
     public async Task<IndexTrend> GetIndexTrendAsync(string symbol)
     {
-        return new IndexTrendHelper().ParseYahooJsonData<IndexTrend>(await DownloadStatsDataAsync(symbol, Country, Language, YahooModule.IndexTrend)).First();
+        return new IndexTrendHelper().ParseYahooJsonData<IndexTrend>(await downloadHelper.DownloadStatsDataAsync(symbol, country, language, YahooModule.IndexTrend)).First();
     }
 
     /// <summary>
@@ -414,7 +415,7 @@ public class YahooClient
     /// <returns></returns>
     public async Task<SectorTrend> GetSectorTrendAsync(string symbol)
     {
-        return new SectorTrendHelper().ParseYahooJsonData<SectorTrend>(await DownloadStatsDataAsync(symbol, Country, Language, YahooModule.SectorTrend)).First();
+        return new SectorTrendHelper().ParseYahooJsonData<SectorTrend>(await downloadHelper.DownloadStatsDataAsync(symbol, country, language, YahooModule.SectorTrend)).First();
     }
 
     /// <summary>
@@ -424,7 +425,7 @@ public class YahooClient
     /// <returns></returns>
     public async Task<IEnumerable<EarningsTrendInfo>> GetEarningsTrendAsync(string symbol)
     {
-        return new EarningsTrendHelper().ParseYahooJsonData<EarningsTrendInfo>(await DownloadStatsDataAsync(symbol, Country, Language, YahooModule.EarningsTrend));
+        return new EarningsTrendHelper().ParseYahooJsonData<EarningsTrendInfo>(await downloadHelper.DownloadStatsDataAsync(symbol, country, language, YahooModule.EarningsTrend));
     }
 
     /// <summary>
@@ -434,7 +435,7 @@ public class YahooClient
     /// <returns></returns>
     public async Task<AssetProfile> GetAssetProfileAsync(string symbol)
     {
-        return new AssetProfileHelper().ParseYahooJsonData<AssetProfile>(await DownloadStatsDataAsync(symbol, Country, Language, YahooModule.AssetProfile)).First();
+        return new AssetProfileHelper().ParseYahooJsonData<AssetProfile>(await downloadHelper.DownloadStatsDataAsync(symbol, country, language, YahooModule.AssetProfile)).First();
     }
 
     /// <summary>
@@ -444,7 +445,7 @@ public class YahooClient
     /// <returns></returns>
     public async Task<FundProfile> GetFundProfileAsync(string symbol)
     {
-        return new FundProfileHelper().ParseYahooJsonData<FundProfile>(await DownloadStatsDataAsync(symbol, Country, Language, YahooModule.FundProfile)).First();
+        return new FundProfileHelper().ParseYahooJsonData<FundProfile>(await downloadHelper.DownloadStatsDataAsync(symbol, country, language, YahooModule.FundProfile)).First();
     }
 
     /// <summary>
@@ -454,7 +455,7 @@ public class YahooClient
     /// <returns></returns>
     public async Task<IEnumerable<CalendarEvents>> GetCalendarEventsAsync(string symbol)
     {
-        return new CalendarEventsHelper().ParseYahooJsonData<CalendarEvents>(await DownloadStatsDataAsync(symbol, Country, Language, YahooModule.CalendarEvents));
+        return new CalendarEventsHelper().ParseYahooJsonData<CalendarEvents>(await downloadHelper.DownloadStatsDataAsync(symbol, country, language, YahooModule.CalendarEvents));
     }
 
     /// <summary>
@@ -464,7 +465,7 @@ public class YahooClient
     /// <returns></returns>
     public async Task<IEnumerable<EarningsInfo>> GetEarningsAsync(string symbol)
     {
-        return new EarningsHelper().ParseYahooJsonData<EarningsInfo>(await DownloadStatsDataAsync(symbol, Country, Language, YahooModule.Earnings));
+        return new EarningsHelper().ParseYahooJsonData<EarningsInfo>(await downloadHelper.DownloadStatsDataAsync(symbol, country, language, YahooModule.Earnings));
     }
 
     /// <summary>
@@ -475,7 +476,7 @@ public class YahooClient
     public async Task<IEnumerable<BalanceSheetStatement>> GetBalanceSheetHistoryAsync(string symbol)
     {
         return new BalanceSheetHistoryHelper().ParseYahooJsonData<BalanceSheetStatement>(
-            await DownloadStatsDataAsync(symbol, Country, Language, YahooModule.BalanceSheetHistory));
+            await downloadHelper.DownloadStatsDataAsync(symbol, country, language, YahooModule.BalanceSheetHistory));
     }
 
     /// <summary>
@@ -486,7 +487,7 @@ public class YahooClient
     public async Task<IEnumerable<CashflowStatement>> GetCashflowStatementHistoryAsync(string symbol)
     {
         return new CashflowStatementHistoryHelper().ParseYahooJsonData<CashflowStatement>(
-            await DownloadStatsDataAsync(symbol, Country, Language, YahooModule.CashflowStatementHistory));
+            await downloadHelper.DownloadStatsDataAsync(symbol, country, language, YahooModule.CashflowStatementHistory));
     }
 
     /// <summary>
@@ -497,7 +498,7 @@ public class YahooClient
     public async Task<IEnumerable<IncomeStatementHistory>> GetIncomeStatementHistoryAsync(string symbol)
     {
         return new IncomeStatementHistoryHelper().ParseYahooJsonData<IncomeStatementHistory>(
-            await DownloadStatsDataAsync(symbol, Country, Language, YahooModule.IncomeStatementHistory));
+            await downloadHelper.DownloadStatsDataAsync(symbol, country, language, YahooModule.IncomeStatementHistory));
     }
 
     /// <summary>
@@ -507,7 +508,7 @@ public class YahooClient
     /// <returns></returns>
     public async Task<IEnumerable<EarningsHistoryInfo>> GetEarningsHistoryAsync(string symbol)
     {
-        return new EarningsHistoryHelper().ParseYahooJsonData<EarningsHistoryInfo>(await DownloadStatsDataAsync(symbol, Country, Language, YahooModule.EarningsHistory));
+        return new EarningsHistoryHelper().ParseYahooJsonData<EarningsHistoryInfo>(await downloadHelper.DownloadStatsDataAsync(symbol, country, language, YahooModule.EarningsHistory));
     }
 
     /// <summary>
@@ -517,7 +518,7 @@ public class YahooClient
     /// <returns></returns>
     public async Task<QuoteType> GetQuoteTypeAsync(string symbol)
     {
-        return new QuoteTypeHelper().ParseYahooJsonData<QuoteType>(await DownloadStatsDataAsync(symbol, Country, Language, YahooModule.QuoteType)).First();
+        return new QuoteTypeHelper().ParseYahooJsonData<QuoteType>(await downloadHelper.DownloadStatsDataAsync(symbol, country, language, YahooModule.QuoteType)).First();
     }
 
     /// <summary>
@@ -527,7 +528,7 @@ public class YahooClient
     /// <returns></returns>
     public async Task<Price> GetPriceInfoAsync(string symbol)
     {
-        return new PriceHelper().ParseYahooJsonData<Price>(await DownloadStatsDataAsync(symbol, Country, Language, YahooModule.Price)).First();
+        return new PriceHelper().ParseYahooJsonData<Price>(await downloadHelper.DownloadStatsDataAsync(symbol, country, language, YahooModule.Price)).First();
     }
 
     /// <summary>
@@ -538,7 +539,7 @@ public class YahooClient
     public async Task<NetSharePurchaseActivity> GetNetSharePurchaseActivityAsync(string symbol)
     {
         return new NetSharePurchaseActivityHelper().ParseYahooJsonData<NetSharePurchaseActivity>(
-            await DownloadStatsDataAsync(symbol, Country, Language, YahooModule.NetSharePurchaseActivity)).First();
+            await downloadHelper.DownloadStatsDataAsync(symbol, country, language, YahooModule.NetSharePurchaseActivity)).First();
     }
 
     /// <summary>
@@ -549,7 +550,7 @@ public class YahooClient
     public async Task<IEnumerable<IncomeStatementHistoryItem>> GetIncomeStatementHistoryQuarterlyAsync(string symbol)
     {
         return new IncomeStatementHistoryQuarterlyHelper().ParseYahooJsonData<IncomeStatementHistoryItem>(
-            await DownloadStatsDataAsync(symbol, Country, Language, YahooModule.IncomeStatementHistoryQuarterly));
+            await downloadHelper.DownloadStatsDataAsync(symbol, country, language, YahooModule.IncomeStatementHistoryQuarterly));
     }
 
     /// <summary>
@@ -560,7 +561,7 @@ public class YahooClient
     public async Task<IEnumerable<CashflowStatement>> GetCashflowStatementHistoryQuarterlyAsync(string symbol)
     {
         return new CashflowStatementHistoryQuarterlyHelper().ParseYahooJsonData<CashflowStatement>(
-            await DownloadStatsDataAsync(symbol, Country, Language, YahooModule.CashflowStatementHistoryQuarterly));
+            await downloadHelper.DownloadStatsDataAsync(symbol, country, language, YahooModule.CashflowStatementHistoryQuarterly));
     }
 
     /// <summary>
@@ -571,7 +572,7 @@ public class YahooClient
     public async Task<IEnumerable<BalanceSheetStatement>> GetBalanceSheetHistoryQuarterlyAsync(string symbol)
     {
         return new BalanceSheetHistoryQuarterlyHelper().ParseYahooJsonData<BalanceSheetStatement>(
-            await DownloadStatsDataAsync(symbol, Country, Language, YahooModule.BalanceSheetHistoryQuarterly));
+            await downloadHelper.DownloadStatsDataAsync(symbol, country, language, YahooModule.BalanceSheetHistoryQuarterly));
     }
 
     /// <summary>
@@ -583,7 +584,7 @@ public class YahooClient
     /// <returns></returns>
     public async Task<ChartInfo> GetChartInfoAsync(string symbol, TimeRange timeRange, TimeInterval timeInterval)
     {
-        return new ChartHelper().ParseYahooJsonData<ChartInfo>(await DownloadChartDataAsync(symbol, timeRange, timeInterval)).First();
+        return new ChartHelper().ParseYahooJsonData<ChartInfo>(await downloadHelper.DownloadChartDataAsync(symbol, timeRange, timeInterval)).First();
     }
 
     /// <summary>
@@ -595,7 +596,7 @@ public class YahooClient
     /// <returns></returns>
     public async Task<SparkInfo> GetSparkChartInfoAsync(string symbol, TimeRange timeRange, TimeInterval timeInterval)
     {
-        return new SparkChartHelper().ParseYahooJsonData<SparkInfo>(await DownloadSparkChartDataAsync(symbol, timeRange, timeInterval)).First();
+        return new SparkChartHelper().ParseYahooJsonData<SparkInfo>(await downloadHelper.DownloadSparkChartDataAsync(symbol, timeRange, timeInterval)).First();
     }
 
     /// <summary>
@@ -607,7 +608,7 @@ public class YahooClient
     /// <returns></returns>
     public async Task<IEnumerable<SparkInfo>> GetSparkChartInfoAsync(IEnumerable<string> symbols, TimeRange timeRange, TimeInterval timeInterval)
     {
-        return new SparkChartHelper().ParseYahooJsonData<SparkInfo>(await DownloadSparkChartDataAsync(symbols, timeRange, timeInterval));
+        return new SparkChartHelper().ParseYahooJsonData<SparkInfo>(await downloadHelper.DownloadSparkChartDataAsync(symbols, timeRange, timeInterval));
     }
 
     /// <summary>
@@ -617,7 +618,7 @@ public class YahooClient
     /// <returns></returns>
     public async Task<RealTimeQuoteResult> GetRealTimeQuotesAsync(string symbol)
     {
-        return new RealTimeQuoteHelper().ParseYahooJsonData<RealTimeQuoteResult>(await DownloadRealTimeQuoteDataAsync(symbol, Country, Language)).FirstOrDefault() ?? new();
+        return new RealTimeQuoteHelper().ParseYahooJsonData<RealTimeQuoteResult>(await downloadHelper.DownloadRealTimeQuoteDataAsync(symbol, country, language)).FirstOrDefault() ?? new();
     }
 
     /// <summary>
@@ -627,7 +628,7 @@ public class YahooClient
     /// <returns></returns>
     public async Task<IEnumerable<RealTimeQuoteResult>> GetRealTimeQuotesAsync(IEnumerable<string> symbols)
     {
-        return new RealTimeQuoteHelper().ParseYahooJsonData<RealTimeQuoteResult>(await DownloadRealTimeQuoteDataAsync(symbols, Country, Language));
+        return new RealTimeQuoteHelper().ParseYahooJsonData<RealTimeQuoteResult>(await downloadHelper.DownloadRealTimeQuoteDataAsync(symbols, country, language));
     }
 
     /// <summary>
@@ -636,7 +637,7 @@ public class YahooClient
     /// <returns></returns>
     public async Task<IEnumerable<MarketSummaryResult>> GetMarketSummaryAsync()
     {
-        return new MarketSummaryHelper().ParseYahooJsonData<MarketSummaryResult>(await DownloadMarketSummaryDataAsync(Country, Language));
+        return new MarketSummaryHelper().ParseYahooJsonData<MarketSummaryResult>(await downloadHelper.DownloadMarketSummaryDataAsync(country, language));
     }
 
     /// <summary>
@@ -646,7 +647,7 @@ public class YahooClient
     /// <returns></returns>
     public async Task<IEnumerable<AutoCompleteResult>> GetAutoCompleteInfoAsync(string searchTerm)
     {
-        return new AutoCompleteHelper().ParseYahooJsonData<AutoCompleteResult>(await DownloadAutoCompleteDataAsync(searchTerm, Country, Language));
+        return new AutoCompleteHelper().ParseYahooJsonData<AutoCompleteResult>(await downloadHelper.DownloadAutoCompleteDataAsync(searchTerm, country, language));
     }
 
     /// <summary>
@@ -656,7 +657,7 @@ public class YahooClient
     /// <returns></returns>
     public async Task<ScreenerResult> GetTopGainersAsync(int count)
     {
-        return new ScreenerHelper().ParseYahooJsonData<ScreenerResult>(await DownloadScreenerDataAsync(ScreenerType.DayGainers, count)).First();
+        return new ScreenerHelper().ParseYahooJsonData<ScreenerResult>(await downloadHelper.DownloadScreenerDataAsync(ScreenerType.DayGainers, count)).First();
     }
 
     /// <summary>
@@ -666,7 +667,7 @@ public class YahooClient
     /// <returns></returns>
     public async Task<ScreenerResult> GetTopLosersAsync(int count)
     {
-        return new ScreenerHelper().ParseYahooJsonData<ScreenerResult>(await DownloadScreenerDataAsync(ScreenerType.DayLosers, count)).First();
+        return new ScreenerHelper().ParseYahooJsonData<ScreenerResult>(await downloadHelper.DownloadScreenerDataAsync(ScreenerType.DayLosers, count)).First();
     }
 
     /// <summary>
@@ -676,7 +677,7 @@ public class YahooClient
     /// <returns></returns>
     public async Task<ScreenerResult> GetSmallCapGainersAsync(int count)
     {
-        return new ScreenerHelper().ParseYahooJsonData<ScreenerResult>(await DownloadScreenerDataAsync(ScreenerType.SmallCapGainers, count)).First();
+        return new ScreenerHelper().ParseYahooJsonData<ScreenerResult>(await downloadHelper.DownloadScreenerDataAsync(ScreenerType.SmallCapGainers, count)).First();
     }
 
     /// <summary>
@@ -686,7 +687,7 @@ public class YahooClient
     /// <returns></returns>
     public async Task<ScreenerResult> GetMostActiveStocksAsync(int count)
     {
-        return new ScreenerHelper().ParseYahooJsonData<ScreenerResult>(await DownloadScreenerDataAsync(ScreenerType.MostActives, count)).First();
+        return new ScreenerHelper().ParseYahooJsonData<ScreenerResult>(await downloadHelper.DownloadScreenerDataAsync(ScreenerType.MostActives, count)).First();
     }
 
     /// <summary>
@@ -696,7 +697,7 @@ public class YahooClient
     /// <returns></returns>
     public async Task<ScreenerResult> GetAggressiveSmallCapStocksAsync(int count)
     {
-        return new ScreenerHelper().ParseYahooJsonData<ScreenerResult>(await DownloadScreenerDataAsync(ScreenerType.AggressiveSmallCaps, count)).First();
+        return new ScreenerHelper().ParseYahooJsonData<ScreenerResult>(await downloadHelper.DownloadScreenerDataAsync(ScreenerType.AggressiveSmallCaps, count)).First();
     }
 
     /// <summary>
@@ -706,7 +707,7 @@ public class YahooClient
     /// <returns></returns>
     public async Task<ScreenerResult> GetConservativeForeignFundsAsync(int count)
     {
-        return new ScreenerHelper().ParseYahooJsonData<ScreenerResult>(await DownloadScreenerDataAsync(ScreenerType.ConservativeForeignFunds, count)).First();
+        return new ScreenerHelper().ParseYahooJsonData<ScreenerResult>(await downloadHelper.DownloadScreenerDataAsync(ScreenerType.ConservativeForeignFunds, count)).First();
     }
 
     /// <summary>
@@ -716,7 +717,7 @@ public class YahooClient
     /// <returns></returns>
     public async Task<ScreenerResult> GetGrowthTechnologyStocksAsync(int count)
     {
-        return new ScreenerHelper().ParseYahooJsonData<ScreenerResult>(await DownloadScreenerDataAsync(ScreenerType.GrowthTechnologyStocks, count)).First();
+        return new ScreenerHelper().ParseYahooJsonData<ScreenerResult>(await downloadHelper.DownloadScreenerDataAsync(ScreenerType.GrowthTechnologyStocks, count)).First();
     }
 
     /// <summary>
@@ -726,7 +727,7 @@ public class YahooClient
     /// <returns></returns>
     public async Task<ScreenerResult> GetHighYieldBondsAsync(int count)
     {
-        return new ScreenerHelper().ParseYahooJsonData<ScreenerResult>(await DownloadScreenerDataAsync(ScreenerType.HighYieldBond, count)).First();
+        return new ScreenerHelper().ParseYahooJsonData<ScreenerResult>(await downloadHelper.DownloadScreenerDataAsync(ScreenerType.HighYieldBond, count)).First();
     }
 
     /// <summary>
@@ -736,7 +737,7 @@ public class YahooClient
     /// <returns></returns>
     public async Task<ScreenerResult> GetMostShortedStocksAsync(int count)
     {
-        return new ScreenerHelper().ParseYahooJsonData<ScreenerResult>(await DownloadScreenerDataAsync(ScreenerType.MostShortedStocks, count)).First();
+        return new ScreenerHelper().ParseYahooJsonData<ScreenerResult>(await downloadHelper.DownloadScreenerDataAsync(ScreenerType.MostShortedStocks, count)).First();
     }
 
     /// <summary>
@@ -746,7 +747,7 @@ public class YahooClient
     /// <returns></returns>
     public async Task<ScreenerResult> GetPortfolioAnchorsAsync(int count)
     {
-        return new ScreenerHelper().ParseYahooJsonData<ScreenerResult>(await DownloadScreenerDataAsync(ScreenerType.PortfolioAnchors, count)).First();
+        return new ScreenerHelper().ParseYahooJsonData<ScreenerResult>(await downloadHelper.DownloadScreenerDataAsync(ScreenerType.PortfolioAnchors, count)).First();
     }
 
     /// <summary>
@@ -756,7 +757,7 @@ public class YahooClient
     /// <returns></returns>
     public async Task<ScreenerResult> GetSolidLargeGrowthFundsAsync(int count)
     {
-        return new ScreenerHelper().ParseYahooJsonData<ScreenerResult>(await DownloadScreenerDataAsync(ScreenerType.SolidLargeGrowthFunds, count)).First();
+        return new ScreenerHelper().ParseYahooJsonData<ScreenerResult>(await downloadHelper.DownloadScreenerDataAsync(ScreenerType.SolidLargeGrowthFunds, count)).First();
     }
 
     /// <summary>
@@ -766,7 +767,7 @@ public class YahooClient
     /// <returns></returns>
     public async Task<ScreenerResult> GetSolidMidcapGrowthFundsAsync(int count)
     {
-        return new ScreenerHelper().ParseYahooJsonData<ScreenerResult>(await DownloadScreenerDataAsync(ScreenerType.SolidMidcapGrowthFunds, count)).First();
+        return new ScreenerHelper().ParseYahooJsonData<ScreenerResult>(await downloadHelper.DownloadScreenerDataAsync(ScreenerType.SolidMidcapGrowthFunds, count)).First();
     }
 
     /// <summary>
@@ -776,7 +777,7 @@ public class YahooClient
     /// <returns></returns>
     public async Task<ScreenerResult> GetTopMutualFundsAsync(int count)
     {
-        return new ScreenerHelper().ParseYahooJsonData<ScreenerResult>(await DownloadScreenerDataAsync(ScreenerType.TopMutualFunds, count)).First();
+        return new ScreenerHelper().ParseYahooJsonData<ScreenerResult>(await downloadHelper.DownloadScreenerDataAsync(ScreenerType.TopMutualFunds, count)).First();
     }
 
     /// <summary>
@@ -786,7 +787,7 @@ public class YahooClient
     /// <returns></returns>
     public async Task<ScreenerResult> GetUndervaluedGrowthStocksAsync(int count)
     {
-        return new ScreenerHelper().ParseYahooJsonData<ScreenerResult>(await DownloadScreenerDataAsync(ScreenerType.UndervaluedGrowthStocks, count)).First();
+        return new ScreenerHelper().ParseYahooJsonData<ScreenerResult>(await downloadHelper.DownloadScreenerDataAsync(ScreenerType.UndervaluedGrowthStocks, count)).First();
     }
 
     /// <summary>
@@ -796,7 +797,7 @@ public class YahooClient
     /// <returns></returns>
     public async Task<ScreenerResult> GetUndervaluedLargeCapStocksAsync(int count)
     {
-        return new ScreenerHelper().ParseYahooJsonData<ScreenerResult>(await DownloadScreenerDataAsync(ScreenerType.UndervaluedLargeCaps, count)).First();
+        return new ScreenerHelper().ParseYahooJsonData<ScreenerResult>(await downloadHelper.DownloadScreenerDataAsync(ScreenerType.UndervaluedLargeCaps, count)).First();
     }
 
     /// <summary>
@@ -806,7 +807,7 @@ public class YahooClient
     /// <returns></returns>
     public async Task<ScreenerResult> GetUndervaluedWideMoatStocksAsync(int count)
     {
-        return new ScreenerHelper().ParseYahooJsonData<ScreenerResult>(await DownloadScreenerDataAsync(ScreenerType.UndervaluedWideMoatStocks, count)).First();
+        return new ScreenerHelper().ParseYahooJsonData<ScreenerResult>(await downloadHelper.DownloadScreenerDataAsync(ScreenerType.UndervaluedWideMoatStocks, count)).First();
     }
 
     /// <summary>
@@ -816,7 +817,7 @@ public class YahooClient
     /// <returns></returns>
     public async Task<ScreenerResult> GetMorningstarFiveStarStocksAsync(int count)
     {
-        return new ScreenerHelper().ParseYahooJsonData<ScreenerResult>(await DownloadScreenerDataAsync(ScreenerType.MorningstarFiveStarStocks, count)).First();
+        return new ScreenerHelper().ParseYahooJsonData<ScreenerResult>(await downloadHelper.DownloadScreenerDataAsync(ScreenerType.MorningstarFiveStarStocks, count)).First();
     }
 
     /// <summary>
@@ -826,7 +827,7 @@ public class YahooClient
     /// <returns></returns>
     public async Task<ScreenerResult> GetStrongUndervaluedStocksAsync(int count)
     {
-        return new ScreenerHelper().ParseYahooJsonData<ScreenerResult>(await DownloadScreenerDataAsync(ScreenerType.StrongUndervaluedStocks, count)).First();
+        return new ScreenerHelper().ParseYahooJsonData<ScreenerResult>(await downloadHelper.DownloadScreenerDataAsync(ScreenerType.StrongUndervaluedStocks, count)).First();
     }
 
     /// <summary>
@@ -836,7 +837,7 @@ public class YahooClient
     /// <returns></returns>
     public async Task<AnalystResult> GetAnalystStrongBuyStocksAsync(int count)
     {
-        return new AnalystHelper().ParseYahooJsonData<AnalystResult>(await DownloadScreenerDataAsync(ScreenerType.AnalystStrongBuyStocks, count)).First();
+        return new AnalystHelper().ParseYahooJsonData<AnalystResult>(await downloadHelper.DownloadScreenerDataAsync(ScreenerType.AnalystStrongBuyStocks, count)).First();
     }
 
     /// <summary>
@@ -846,7 +847,7 @@ public class YahooClient
     /// <returns></returns>
     public async Task<AnalystResult> GetLatestAnalystUpgradedStocksAsync(int count)
     {
-        return new AnalystHelper().ParseYahooJsonData<AnalystResult>(await DownloadScreenerDataAsync(ScreenerType.LatestAnalystUpgradedStocks, count)).First();
+        return new AnalystHelper().ParseYahooJsonData<AnalystResult>(await downloadHelper.DownloadScreenerDataAsync(ScreenerType.LatestAnalystUpgradedStocks, count)).First();
     }
 
     /// <summary>
@@ -856,7 +857,7 @@ public class YahooClient
     /// <returns></returns>
     public async Task<InstitutionResult> GetMostInstitutionallyBoughtLargeCapStocksAsync(int count)
     {
-        return new InstitutionHelper().ParseYahooJsonData<InstitutionResult>(await DownloadScreenerDataAsync(ScreenerType.MostInstitutionallyBoughtLargeCapStocks, count)).First();
+        return new InstitutionHelper().ParseYahooJsonData<InstitutionResult>(await downloadHelper.DownloadScreenerDataAsync(ScreenerType.MostInstitutionallyBoughtLargeCapStocks, count)).First();
     }
 
     /// <summary>
@@ -866,7 +867,7 @@ public class YahooClient
     /// <returns></returns>
     public async Task<InstitutionResult> GetMostInstitutionallyHeldLargeCapStocksAsync(int count)
     {
-        return new InstitutionHelper().ParseYahooJsonData<InstitutionResult>(await DownloadScreenerDataAsync(ScreenerType.MostInstitutionallyHeldLargeCapStocks, count)).First();
+        return new InstitutionHelper().ParseYahooJsonData<InstitutionResult>(await downloadHelper.DownloadScreenerDataAsync(ScreenerType.MostInstitutionallyHeldLargeCapStocks, count)).First();
     }
 
     /// <summary>
@@ -876,7 +877,7 @@ public class YahooClient
     /// <returns></returns>
     public async Task<InstitutionResult> GetMostInstitutionallySoldLargeCapStocksAsync(int count)
     {
-        return new InstitutionHelper().ParseYahooJsonData<InstitutionResult>(await DownloadScreenerDataAsync(ScreenerType.MostInstitutionallySoldLargeCapStocks, count)).First();
+        return new InstitutionHelper().ParseYahooJsonData<InstitutionResult>(await downloadHelper.DownloadScreenerDataAsync(ScreenerType.MostInstitutionallySoldLargeCapStocks, count)).First();
     }
 
     /// <summary>
@@ -886,7 +887,7 @@ public class YahooClient
     /// <returns></returns>
     public async Task<InstitutionResult> GetStocksWithMostInstitutionalBuyersAsync(int count)
     {
-        return new InstitutionHelper().ParseYahooJsonData<InstitutionResult>(await DownloadScreenerDataAsync(ScreenerType.StocksWithMostInstitutionalBuyers, count)).First();
+        return new InstitutionHelper().ParseYahooJsonData<InstitutionResult>(await downloadHelper.DownloadScreenerDataAsync(ScreenerType.StocksWithMostInstitutionalBuyers, count)).First();
     }
 
     /// <summary>
@@ -896,7 +897,7 @@ public class YahooClient
     /// <returns></returns>
     public async Task<InstitutionResult> GetStocksWithMostInstitutionalSellersAsync(int count)
     {
-        return new InstitutionHelper().ParseYahooJsonData<InstitutionResult>(await DownloadScreenerDataAsync(ScreenerType.StocksWithMostInstitutionalSellers, count)).First();
+        return new InstitutionHelper().ParseYahooJsonData<InstitutionResult>(await downloadHelper.DownloadScreenerDataAsync(ScreenerType.StocksWithMostInstitutionalSellers, count)).First();
     }
 
     /// <summary>
@@ -906,7 +907,7 @@ public class YahooClient
     /// <returns></returns>
     public async Task<InstitutionResult> GetStocksMostBoughtByHedgeFundsAsync(int count)
     {
-        return new InstitutionHelper().ParseYahooJsonData<InstitutionResult>(await DownloadScreenerDataAsync(ScreenerType.StocksMostBoughtByHedgeFunds, count)).First();
+        return new InstitutionHelper().ParseYahooJsonData<InstitutionResult>(await downloadHelper.DownloadScreenerDataAsync(ScreenerType.StocksMostBoughtByHedgeFunds, count)).First();
     }
 
     /// <summary>
@@ -916,7 +917,7 @@ public class YahooClient
     /// <returns></returns>
     public async Task<InstitutionResult> GetStocksMostBoughtByPensionFundsAsync(int count)
     {
-        return new InstitutionHelper().ParseYahooJsonData<InstitutionResult>(await DownloadScreenerDataAsync(ScreenerType.StocksMostBoughtByPensionFunds, count)).First();
+        return new InstitutionHelper().ParseYahooJsonData<InstitutionResult>(await downloadHelper.DownloadScreenerDataAsync(ScreenerType.StocksMostBoughtByPensionFunds, count)).First();
     }
 
     /// <summary>
@@ -926,7 +927,7 @@ public class YahooClient
     /// <returns></returns>
     public async Task<InstitutionResult> GetStocksMostBoughtByPrivateEquityAsync(int count)
     {
-        return new InstitutionHelper().ParseYahooJsonData<InstitutionResult>(await DownloadScreenerDataAsync(ScreenerType.StocksMostBoughtByPrivateEquity, count)).First();
+        return new InstitutionHelper().ParseYahooJsonData<InstitutionResult>(await downloadHelper.DownloadScreenerDataAsync(ScreenerType.StocksMostBoughtByPrivateEquity, count)).First();
     }
 
     /// <summary>
@@ -936,7 +937,7 @@ public class YahooClient
     /// <returns></returns>
     public async Task<InstitutionResult> GetStocksMostBoughtBySovereignWealthFundsAsync(int count)
     {
-        return new InstitutionHelper().ParseYahooJsonData<InstitutionResult>(await DownloadScreenerDataAsync(ScreenerType.StocksMostBoughtBySovereignWealthFunds, count)).First();
+        return new InstitutionHelper().ParseYahooJsonData<InstitutionResult>(await downloadHelper.DownloadScreenerDataAsync(ScreenerType.StocksMostBoughtBySovereignWealthFunds, count)).First();
     }
 
     /// <summary>
@@ -946,7 +947,7 @@ public class YahooClient
     /// <returns></returns>
     public async Task<StocksOwnedResult> GetTopStocksOwnedByCathieWoodAsync(int count)
     {
-        return new StocksOwnedHelper().ParseYahooJsonData<StocksOwnedResult>(await DownloadScreenerDataAsync(ScreenerType.TopStocksOwnedByCathieWood, count)).First();
+        return new StocksOwnedHelper().ParseYahooJsonData<StocksOwnedResult>(await downloadHelper.DownloadScreenerDataAsync(ScreenerType.TopStocksOwnedByCathieWood, count)).First();
     }
 
     /// <summary>
@@ -956,7 +957,7 @@ public class YahooClient
     /// <returns></returns>
     public async Task<StocksOwnedResult> GetTopStocksOwnedByGoldmanSachsAsync(int count)
     {
-        return new StocksOwnedHelper().ParseYahooJsonData<StocksOwnedResult>(await DownloadScreenerDataAsync(ScreenerType.TopStocksOwnedByGoldmanSachs, count)).First();
+        return new StocksOwnedHelper().ParseYahooJsonData<StocksOwnedResult>(await downloadHelper.DownloadScreenerDataAsync(ScreenerType.TopStocksOwnedByGoldmanSachs, count)).First();
     }
 
     /// <summary>
@@ -966,7 +967,7 @@ public class YahooClient
     /// <returns></returns>
     public async Task<StocksOwnedResult> GetTopStocksOwnedByWarrenBuffetAsync(int count)
     {
-        return new StocksOwnedHelper().ParseYahooJsonData<StocksOwnedResult>(await DownloadScreenerDataAsync(ScreenerType.TopStocksOwnedByWarrenBuffet, count)).First();
+        return new StocksOwnedHelper().ParseYahooJsonData<StocksOwnedResult>(await downloadHelper.DownloadScreenerDataAsync(ScreenerType.TopStocksOwnedByWarrenBuffet, count)).First();
     }
 
     /// <summary>
@@ -976,7 +977,7 @@ public class YahooClient
     /// <returns></returns>
     public async Task<StocksOwnedResult> GetTopStocksOwnedByRayDalioAsync(int count)
     {
-        return new StocksOwnedHelper().ParseYahooJsonData<StocksOwnedResult>(await DownloadScreenerDataAsync(ScreenerType.TopStocksOwnedByRayDalio, count)).First();
+        return new StocksOwnedHelper().ParseYahooJsonData<StocksOwnedResult>(await downloadHelper.DownloadScreenerDataAsync(ScreenerType.TopStocksOwnedByRayDalio, count)).First();
     }
 
     /// <summary>
@@ -986,7 +987,7 @@ public class YahooClient
     /// <returns></returns>
     public async Task<TrendingStocksResult> GetTopBearishStocksRightNowAsync(int count)
     {
-        return new TrendingStocksHelper().ParseYahooJsonData<TrendingStocksResult>(await DownloadScreenerDataAsync(ScreenerType.BearishStocksRightNow, count)).First();
+        return new TrendingStocksHelper().ParseYahooJsonData<TrendingStocksResult>(await downloadHelper.DownloadScreenerDataAsync(ScreenerType.BearishStocksRightNow, count)).First();
     }
 
     /// <summary>
@@ -996,7 +997,7 @@ public class YahooClient
     /// <returns></returns>
     public async Task<TrendingStocksResult> GetTopBullishStocksRightNowAsync(int count)
     {
-        return new TrendingStocksHelper().ParseYahooJsonData<TrendingStocksResult>(await DownloadScreenerDataAsync(ScreenerType.BullishStocksRightNow, count)).First();
+        return new TrendingStocksHelper().ParseYahooJsonData<TrendingStocksResult>(await downloadHelper.DownloadScreenerDataAsync(ScreenerType.BullishStocksRightNow, count)).First();
     }
 
     /// <summary>
@@ -1006,6 +1007,6 @@ public class YahooClient
     /// <returns></returns>
     public async Task<TrendingStocksResult> GetTopUpsideBreakoutStocksAsync(int count)
     {
-        return new TrendingStocksHelper().ParseYahooJsonData<TrendingStocksResult>(await DownloadScreenerDataAsync(ScreenerType.UpsideBreakoutStocksDaily, count)).First();
+        return new TrendingStocksHelper().ParseYahooJsonData<TrendingStocksResult>(await downloadHelper.DownloadScreenerDataAsync(ScreenerType.UpsideBreakoutStocksDaily, count)).First();
     }
 }
